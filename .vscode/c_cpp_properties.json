@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${ONEAPI_ROOT}/compiler/2023.2.0/linux/include/sycl"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/local/bin/clang",
+            "intelliSenseMode": "linux-clang-x64"
+        }
+    ],
+    "version": 4
+}
