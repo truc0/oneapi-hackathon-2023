@@ -1,6 +1,8 @@
 #pragma once
 
+#include <vector>
+
 namespace Random {
-  void generate2DArray(unsigned size);
+  auto generate2DArray(unsigned size);
 }
 

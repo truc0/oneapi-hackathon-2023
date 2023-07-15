@@ -5,10 +5,10 @@ enable_testing()
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
+project(OneAPI_Hackathon LANGUAGES C CXX)
+
 set(CMAKE_C_COMPILER icc)
 set(CMAKE_CXX_COMPILER icpx)
-
-project(OneAPI_Hackathon LANGUAGES C CXX)
 
 find_package(MKL CONFIG REQUIRED)
 

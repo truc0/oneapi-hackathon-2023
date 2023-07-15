@@ -1,0 +1,33 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**",
+        "/opt/intel/oneapi/tbb/2021.10.0/include",
+        "/opt/intel/oneapi/mpi/2021.10.0/include",
+        "/opt/intel/oneapi/mkl/2023.2.0/include",
+        "/opt/intel/oneapi/ipp/2021.9.0/include",
+        "/opt/intel/oneapi/ippcp/2021.8.0/include",
+        "/opt/intel/oneapi/dpl/2022.2.0/linux/include",
+        "/opt/intel/oneapi/dpcpp-ct/2023.2.0/include",
+        "/opt/intel/oneapi/dnnl/2023.2.0/cpu_dpcpp_gpu_dpcpp/include",
+        "/opt/intel/oneapi/dev-utilities/2021.10.0/include",
+        "/opt/intel/oneapi/dal/2023.2.0/include",
+        "/opt/intel/oneapi/compiler/2023.2.0/linux/lib/oclfpga/include",
+        "/opt/intel/oneapi/ccl/2021.10.0/include/cpu_gpu_dpcpp",
+        "/opt/intel/oneapi/compiler/2023.2.0/linux/compiler/include",
+        "/usr/include/c++/12",
+        "/usr/include/x86_64-linux-gnu/c++/12",
+        "/usr/include/c++/12/backward",
+        "/opt/intel/oneapi/compiler/2023.2.0/linux/lib/clang/17/include",
+        "/usr/local/include",
+        "/usr/include/x86_64-linux-gnu",
+        "/usr/include"
+    ],
+    "C_Cpp.default.defines": [],
+    "C_Cpp.default.compilerPath": "/opt/intel/oneapi/compiler/2023.2.0/linux/bin/icpx",
+    "C_Cpp.default.compilerArgs": [
+        "-fsycl"
+    ],
+    "C_Cpp.default.cStandard": "c17"
+}

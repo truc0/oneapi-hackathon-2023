@@ -4,11 +4,12 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${ONEAPI_ROOT}/compiler/2023.2.0/linux/include/sycl"
+                "/opt/intel/oneapi/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/local/bin/clang",
-            "intelliSenseMode": "linux-clang-x64"
+            "compilerPath": "/opt/intel/oneapi/compiler/2023.2.0/linux/bin/icpx",
+            "intelliSenseMode": "linux-clang-x64",
+            // "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4
