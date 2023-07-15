@@ -38,7 +38,7 @@ find_package(OpenCLHeaders REQUIRED)
 
 # message(STATUS "${MKL_IMPORTED_TARGETS}") #Provides available list of targets based on input
 
-add_executable(fft main.cpp src/random.cpp)
+add_executable(fft src/generator.cpp src/executor.cpp main.cpp)
 
 target_compile_options(fft PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_COMPILE_OPTIONS>)
 target_include_directories(fft PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES>)
