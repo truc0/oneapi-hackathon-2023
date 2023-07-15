@@ -29,5 +29,8 @@
     "C_Cpp.default.compilerArgs": [
         "-fsycl"
     ],
-    "C_Cpp.default.cStandard": "c17"
+    "C_Cpp.default.cStandard": "c17",
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
 }

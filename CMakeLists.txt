@@ -36,8 +36,9 @@ endif()
 
 find_package(OpenCLHeaders REQUIRED)
 
-#message(STATUS "${MKL_IMPORTED_TARGETS}") #Provides available list of targets based on input
-add_executable(fft random.cpp)
+# message(STATUS "${MKL_IMPORTED_TARGETS}") #Provides available list of targets based on input
+
+add_executable(fft main.cpp src/random.cpp)
 
 target_compile_options(fft PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_COMPILE_OPTIONS>)
 target_include_directories(fft PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -49,14 +50,16 @@ target_include_directories(fft SYSTEM PRIVATE
   ${SYCL_HEADERS}
   ${DPCPP_HEADERS}
   ${InferenceEngine_INCLUDE_DIRS}
+  "includes/"
 )
 target_link_libraries(fft PUBLIC
   OpenCL::Headers
   dl
+  mkl_sycl
   ${SYCL_LIB}
 )
 
-add_test(NAME fft_test COMMAND myapp)
-if(MKL_ENV)
-  set_tests_properties(fft_test PROPERTIES ENVIRONMENT "${MKL_ENV}")
-endif()
+# add_test(NAME fft_test COMMAND myapp)
+# if(MKL_ENV)
+#   set_tests_properties(fft_test PROPERTIES ENVIRONMENT "${MKL_ENV}")
+# endif()
