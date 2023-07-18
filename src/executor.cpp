@@ -7,7 +7,75 @@
 
 ComplexFloatVector SimpleFFTExecutor::execute(const unsigned N, RealFloatVector &input, sycl::queue &queue)
 {
-    std::cout << "SimpleFFTExecutor::run()" << std::endl;
+    // get logN
+    unsigned logN = 0;
+    {
+        unsigned n = N;
+        while (n >>= 1)
+        {
+            logN++;
+        }
+    }
+
+    ComplexAllocatorType allocator(queue.get_context(), queue.get_device());
+    ComplexFloatVector transposedImm(N * N, allocator);
+    ComplexFloatVector output(N * N, allocator);
+
+    for (unsigned index = 0; index < N; ++index)
+    {
+        ComplexFloatVector row(input.begin() + N * index, input.begin() + N * index + N, allocator);
+        ComplexFloatVector Frow = fft(logN, row, allocator);
+        // transpose
+        for (unsigned i = 0; i < N; i++)
+        {
+            transposedImm[i * N + index] = Frow[i];
+        }
+    }
+    for (unsigned index = 0; index < N; ++index)
+    {
+        ComplexFloatVector row(transposedImm.begin() + N * index, transposedImm.begin() + N * index + N, allocator);
+        ComplexFloatVector Frow = fft(logN, row, allocator);
+        // transpose
+        for (unsigned i = 0; i < N; i++)
+        {
+            output[i * N + index] = Frow[i];
+        }
+    }
+
+    return output;
+}
+
+ComplexFloatVector SimpleFFTExecutor::fft(const unsigned logN, ComplexFloatVector &input, ComplexAllocatorType &allocator)
+{
+    if (input.size() == 1)
+    {
+        return input;
+    }
+
+    ComplexFloatVector odd(input.size() / 2, allocator);
+    ComplexFloatVector even(input.size() / 2, allocator);
+
+    for (unsigned i = 0; i < input.size() / 2; i++)
+    {
+        even[i] = input[2 * i];
+        odd[i] = input[2 * i + 1];
+    }
+
+    const auto oddOutput = fft(logN - 1, odd, allocator);
+    const auto evenOutput = fft(logN - 1, even, allocator);
+
+    ComplexFloatVector output(input.size(), allocator);
+
+    const double ANG = 2 * M_PI / (1 << logN);
+    std::complex<float> w(1), wn(std::cos(ANG), std::sin(ANG));
+
+    for (unsigned i = 0; i < input.size() / 2; i++)
+    {
+        output[i] = evenOutput[i] + w * oddOutput[i];
+        output[i + input.size() / 2] = evenOutput[i] - w * oddOutput[i];
+        w *= wn;
+    }
+    return output;
 }
 
 /* OneMKLFFTExecutor */

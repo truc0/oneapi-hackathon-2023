@@ -9,8 +9,9 @@ int main()
     auto generator = Generator();
     auto input = generator.generate2DRandomArray(N);
 
-    FFTExecutor *executor = new OneMKLFFTExecutor();
-    auto dst = executor->execute(N, input, generator.queue());
+    // FFTExecutor *executor = new OneMKLFFTExecutor();
+    SimpleFFTExecutor executor;
+    auto dst = executor.execute(N, input, generator.queue());
 
     for (const auto &it : dst)
     {
