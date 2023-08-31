@@ -12,9 +12,9 @@ inline void printArray(const std::vector<T, Allocator> &array)
 }
 
 template <class T, class Allocator>
-inline double diffArray(const std::vector<T, Allocator> &array1, const std::vector<T, Allocator> &array2, const unsigned N, const unsigned validCol)
+inline long double diffArray(const std::vector<T, Allocator> &array1, const std::vector<T, Allocator> &array2, const unsigned N, const unsigned validCol)
 {
-    double diff = 0;
+    long double diff = 0;
     for (unsigned row = 0; row < N; ++row)
     {
         for (unsigned col = 0; col < validCol; ++col)

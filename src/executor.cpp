@@ -17,7 +17,6 @@ ComplexFloatVector SimpleFFTExecutor::execute(const unsigned N, RealFloatVector 
             logN++;
         }
     }
-    std::cout << "logN: " << logN << std::endl;
 
     ComplexAllocatorType allocator(queue.get_context(), queue.get_device());
     ComplexFloatVector transposedImm(N * N, allocator);
