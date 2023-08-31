@@ -95,6 +95,8 @@ Max difference: 0
 Min difference: 0
 ```
 
+可以看到多次运行时，OneMKL 和 FFTW 实现单轮所需时间仍在同一数量级，平均而言 OneMKL 实现仍有较大的性能优势，但需要注意 OneMKL 测试数据显示其数据分布不均匀，最大值和最小值相差较大，因此在实际使用时需要注意。
+
 ### 运行配置
 
 - Ubuntu 22.04.3 LTS x86_64
