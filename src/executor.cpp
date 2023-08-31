@@ -16,6 +16,7 @@ ComplexFloatVector SimpleFFTExecutor::execute(const unsigned N, RealFloatVector 
             logN++;
         }
     }
+    std::cout << "logN: " << logN << std::endl;
 
     ComplexAllocatorType allocator(queue.get_context(), queue.get_device());
     ComplexFloatVector transposedImm(N * N, allocator);
@@ -45,17 +46,20 @@ ComplexFloatVector SimpleFFTExecutor::execute(const unsigned N, RealFloatVector 
     return output;
 }
 
-ComplexFloatVector SimpleFFTExecutor::fft(const unsigned logN, ComplexFloatVector &input, ComplexAllocatorType &allocator)
+ComplexFloatVector SimpleFFTExecutor::fft(const unsigned logN, const ComplexFloatVector &input, ComplexAllocatorType &allocator)
 {
     if (input.size() == 1)
     {
         return input;
     }
 
-    ComplexFloatVector odd(input.size() / 2, allocator);
-    ComplexFloatVector even(input.size() / 2, allocator);
+    const auto isize = input.size();
+    const auto ihalf = isize / 2;
 
-    for (unsigned i = 0; i < input.size() / 2; i++)
+    ComplexFloatVector odd(ihalf, allocator);
+    ComplexFloatVector even(ihalf, allocator);
+
+    for (unsigned i = 0; i < ihalf; i++)
     {
         even[i] = input[2 * i];
         odd[i] = input[2 * i + 1];
@@ -66,13 +70,13 @@ ComplexFloatVector SimpleFFTExecutor::fft(const unsigned logN, ComplexFloatVecto
 
     ComplexFloatVector output(input.size(), allocator);
 
-    const double ANG = 2 * M_PI / (1 << logN);
+    const double ANG = -2 * M_PI / (1 << logN);
     std::complex<float> w(1), wn(std::cos(ANG), std::sin(ANG));
 
-    for (unsigned i = 0; i < input.size() / 2; i++)
+    for (unsigned i = 0; i < ihalf; i++)
     {
         output[i] = evenOutput[i] + w * oddOutput[i];
-        output[i + input.size() / 2] = evenOutput[i] - w * oddOutput[i];
+        output[i + ihalf] = evenOutput[i] - w * oddOutput[i];
         w *= wn;
     }
     return output;
@@ -82,8 +86,6 @@ ComplexFloatVector SimpleFFTExecutor::fft(const unsigned logN, ComplexFloatVecto
 
 ComplexFloatVector OneMKLFFTExecutor::execute(const unsigned N, RealFloatVector &input, sycl::queue &queue)
 {
-    std::cout << "OneMKLFFTExecutor::execute()" << std::endl;
-
     const auto size = N * N;
     auto allocator = ComplexAllocatorType(queue.get_context(), queue.get_device());
 
@@ -91,17 +93,19 @@ ComplexFloatVector OneMKLFFTExecutor::execute(const unsigned N, RealFloatVector 
                                  oneapi::mkl::dft::domain::REAL>
         desc({N, N});
 
-    // desc.set_value(oneapi::mkl::dft::config_param::DIMENSION, static_cast<std::int64_t>(2));
     desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, static_cast<std::int64_t>(1));
     desc.set_value(oneapi::mkl::dft::config_param::CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX);
     desc.set_value(oneapi::mkl::dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
+    // desc.set_value(oneapi::mkl::dft::config_param::FWD_DISTANCE, static_cast<std::int64_t>(N));
+    // desc.set_value(oneapi::mkl::dft::config_param::BWD_DISTANCE, static_cast<std::int64_t>(N));
+    // desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_STRIDES, static_cast<std::int64_t>(N));
     desc.commit(queue);
 
     ComplexFloatVector dst(size, allocator);
 
-    auto event = oneapi::mkl::dft::compute_forward<
-        decltype(desc), float, std::complex<float>>(desc, input.data(), dst.data());
-    event.wait();
+    oneapi::mkl::dft::compute_forward<
+        decltype(desc), float, std::complex<float>>(desc, input.data(), dst.data())
+        .wait();
 
     return dst;
 }

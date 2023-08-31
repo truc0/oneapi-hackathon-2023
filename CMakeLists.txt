@@ -57,6 +57,7 @@ target_link_libraries(fft PUBLIC
   dl
   mkl_sycl
   ${SYCL_LIB}
+  fftw3
 )
 
 # add_test(NAME fft_test COMMAND myapp)
