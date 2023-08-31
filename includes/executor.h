@@ -31,3 +31,9 @@ class OneMKLFFTExecutor : public FFTExecutor
 public:
     ComplexFloatVector execute(const unsigned N, RealFloatVector &input, sycl::queue &queue) override;
 };
+
+class FFTWFFTExecutor : public FFTExecutor
+{
+public:
+    ComplexFloatVector execute(const unsigned N, RealFloatVector &input, sycl::queue &queue) override;
+};

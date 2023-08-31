@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fftw3.h>
 #include "oneapi/mkl.hpp"
 
 #include "executor.h"
@@ -96,9 +97,6 @@ ComplexFloatVector OneMKLFFTExecutor::execute(const unsigned N, RealFloatVector 
     desc.set_value(oneapi::mkl::dft::config_param::NUMBER_OF_TRANSFORMS, static_cast<std::int64_t>(1));
     desc.set_value(oneapi::mkl::dft::config_param::CONJUGATE_EVEN_STORAGE, DFTI_COMPLEX_COMPLEX);
     desc.set_value(oneapi::mkl::dft::config_param::PLACEMENT, DFTI_NOT_INPLACE);
-    // desc.set_value(oneapi::mkl::dft::config_param::FWD_DISTANCE, static_cast<std::int64_t>(N));
-    // desc.set_value(oneapi::mkl::dft::config_param::BWD_DISTANCE, static_cast<std::int64_t>(N));
-    // desc.set_value(oneapi::mkl::dft::config_param::OUTPUT_STRIDES, static_cast<std::int64_t>(N));
     desc.commit(queue);
 
     ComplexFloatVector dst(size, allocator);
@@ -106,6 +104,43 @@ ComplexFloatVector OneMKLFFTExecutor::execute(const unsigned N, RealFloatVector 
     oneapi::mkl::dft::compute_forward<
         decltype(desc), float, std::complex<float>>(desc, input.data(), dst.data())
         .wait();
+
+    return dst;
+}
+
+/* FFTWFFTExecutor */
+
+ComplexFloatVector FFTWFFTExecutor::execute(const unsigned N, RealFloatVector &input, sycl::queue &queue)
+{
+    const auto size = N * N;
+    const auto validCol = N / 2 + 1;
+    auto allocator = ComplexAllocatorType(queue.get_context(), queue.get_device());
+
+    auto in = fftwf_alloc_real(size);
+    auto out = fftwf_alloc_complex(size);
+
+    for (unsigned i = 0; i < input.size(); ++i)
+    {
+        in[i] = input[i];
+    }
+
+    auto plan = fftwf_plan_dft_r2c_2d(N, N, in, out, FFTW_MEASURE);
+
+    fftwf_execute(plan);
+
+    ComplexFloatVector output(size, allocator);
+    for (unsigned row = 0; row < N; ++row)
+    {
+        for (unsigned col = 0; col < validCol; ++col)
+        {
+            output[row * N + col] = {out[row * validCol + col][0], out[row * validCol + col][1]};
+        }
+    }
+
+    fftwf_free(in);
+    fftwf_free(out);
+    return output;
+    ComplexFloatVector dst(size, allocator);
 
     return dst;
 }

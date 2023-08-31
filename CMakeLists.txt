@@ -40,6 +40,17 @@ find_package(OpenCLHeaders REQUIRED)
 
 add_executable(fft src/generator.cpp src/executor.cpp main.cpp)
 
+option(DEBUG "Enable debug symbols" OFF)
+option(ENABLE_SIMPLE "Enable simple but slow version of FFT" OFF)
+
+if (DEBUG)
+  target_compile_definitions(fft PUBLIC DEBUG)
+endif()
+
+if (ENABLE_SIMPLE)
+  target_compile_definitions(fft PUBLIC ENABLE_SIMPLE)
+endif()
+
 target_compile_options(fft PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_COMPILE_OPTIONS>)
 target_include_directories(fft PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES>)
 target_link_libraries(fft PUBLIC $<LINK_ONLY:MKL::MKL>)
