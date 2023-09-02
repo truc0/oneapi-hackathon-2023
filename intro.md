@@ -1,5 +1,7 @@
 # 基于 OneMKL 库的高性能二维傅里叶变换实践及性能分析
 
+> 本样例代码位于 [github 仓库](https://github.com/truc0/oneapi-hackathon-2023/tree/main/demo)
+
 本样例基于 OneMKL 库实现了指定大小的二维随机矩阵生成，通过 OneMKL 库提供的快速傅里叶变换接口实现了高性能 real to complex （实数输入、复数输出）的单精度二维傅里叶变换，同时提供了基于 FFTW3 库的等价实现并进行了性能对比。
 
 读者可以通过本样例了解 OneMKL 库在 C++ 程序中的基本用法，了解 OneMKL 的性能优势。
@@ -8,11 +10,11 @@
 
 OneMKL 是 Intel OneAPI 的数学计算库，该库对常见的数学运算进行了高度优化和并行化，能够在 CPU 上实现高速运算，并且包含 SYCL 接口为 CPU/GPU 异构平台计算提供支持。OneMKL 库包含对稠密矩阵代数、稀疏矩阵代数、随机数生成、快速傅里叶变换等常用数学计算的高性能实现，能为计算密集型程序提供强大、易用的数学计算接口。
 
-使用 OneMKL 库需要首先安装 Intel OneAPI，本样例中的代码在 [Intel OneAPI 2023.2]() 环境下进行开发。OneMKL 库的下载和安装方式可以在 [Intel OneMKL 官方网站](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-download.html) 上找到。OneMKL 库同时是 [Intel OneAPI Base Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html) 中的一部分，本样例中会使用 Intel OneAPI Toolkit 中的其他套件，**推荐直接[安装 Intel OneAPI Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)** 以获得更好的开发体验。
+使用 OneMKL 库需要首先安装 Intel OneAPI，本样例中的代码在 Intel OneAPI 2023.2 环境下进行开发。OneMKL 库的下载和安装方式可以在 [Intel OneMKL 官方网站](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl-download.html) 上找到。OneMKL 库同时是 [Intel OneAPI Base Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html) 中的一部分，本样例中会使用 Intel OneAPI Toolkit 中的其他套件，**推荐直接[安装 Intel OneAPI Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html)** 以获得更好的开发体验。
 
 ## 编写第一个 OneMKL 程序
 
-本样例使用 CMake 进行编译、链接配置，请确保已安装 3.13 版本以上的 CMake，本样例已在 Cmake 3.20 上测试。本样例的 [CMakeLists.txt](https://github.com/truc0/oneapi-hackathon-2023/demo) 主要参考 [Intel CMake Config for OneMKL](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2023-0/cmake-config-for-onemkl.html) 中的设置，详细配置可参考 [OneMKL 开发者文档](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2023-2/overview.html)。
+本样例使用 CMake 进行编译、链接配置，请确保已安装 3.13 版本以上的 CMake，本样例已在 Cmake 3.20 上测试。本样例的 [CMakeLists.txt](https://github.com/truc0/oneapi-hackathon-2023/tree/main/demo/CMakeLists.txt) 主要参考 [Intel CMake Config for OneMKL](https://www.intel.com/content/www/us/en/docs/onemkl/developer-guide-windows/2023-0/cmake-config-for-onemkl.html) 中的设置，详细配置可参考 [OneMKL 开发者文档](https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-dpcpp/2023-2/overview.html)。
 
 ### CMake 配置
 
@@ -238,13 +240,13 @@ oneapi::mkl::dft::compute_forward<
     .wait();
 ```
 
-至此，我们使用 OneMKL 库完成了二维快速傅里叶变换，完整的代码文件参见 [Github 仓库](https://github.com/truc0/oneapi-hackathon-2023/demo)。
+至此，我们使用 OneMKL 库完成了二维快速傅里叶变换，完整的代码文件参见 [github 仓库](https://github.com/truc0/oneapi-hackathon-2023/tree/main/demo/main.cpp)。
 
 注意由于实数序列的频域具有共轭性，在输出中只有前 $\frac{N}{2} + 1$ 列数据有效。
 
 ## 性能对比及正确性验证
 
-我们采用 FFTW3 库作为性能对比和正确性验证的快速傅里叶变换参考实现，这里给出对应的代码：
+我们采用 FFTW3 库作为性能对比和正确性验证的快速傅里叶变换参考实现，这里给出对应的代码，完整的代码文件参见 [github 仓库](https://github.com/truc0/oneapi-hackathon-2023/tree/main/demo)。：
 
 ```cpp
 ComplexVectorType use_fftw(const unsigned N, RealVectorType &input, sycl::queue &queue)
@@ -328,4 +330,12 @@ for (unsigned row = 0; row < N; ++row)
 std::cout << "OneMKLFFTExecutor time: " << oneTime.count() << " ns" << std::endl;
 std::cout << "FFTWFFTExecutor time: " << fftwTime.count() << " ns" << std::endl;
 std::cout << "Difference of oneMKL and fftw: " << diffOne << std::endl;
+```
+
+运行后输出的格式类似：
+
+```txt
+OneMKLFFTExecutor time: 25526224 ns
+FFTWFFTExecutor time: 36094255 ns
+Difference of oneMKL and fftw: 0
 ```
