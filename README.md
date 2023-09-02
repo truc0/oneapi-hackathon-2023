@@ -70,7 +70,7 @@ Difference of oneMKL and simple: 4878.95
 
 > 多次运行需要注释 main 函数中的 run_once 调用，并确保 run_multiple 没有被注释
 
-SimpleExecutor 运行时间教程，因此在多次运行时不采用此方法。
+SimpleExecutor 运行时间较长，因此在多次运行时不采用此方法。
 
 多次运行性能如下：
 
@@ -95,7 +95,7 @@ Max difference: 0
 Min difference: 0
 ```
 
-可以看到多次运行时，OneMKL 和 FFTW 实现单轮所需时间仍在同一数量级，平均而言 OneMKL 实现仍有较大的性能优势，但需要注意 OneMKL 测试数据显示其数据分布不均匀，最大值和最小值相差较大，因此在实际使用时需要注意。
+可以看到多次运行时，OneMKL 和 FFTW 两种实现的单轮所需时间仍在同一数量级，平均而言 OneMKL 实现仍有较大的性能优势，但需要注意 OneMKL 测试数据显示其数据分布不均匀，最大值和最小值相差较大，因此在实际使用时需要注意。
 
 ### 运行配置
 
